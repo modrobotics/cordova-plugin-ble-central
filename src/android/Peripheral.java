@@ -371,6 +371,7 @@ public class Peripheral extends BluetoothGattCallback {
             LOG.d(TAG, "onConnectionStateChange CONNECTED");
             connected = true;
             connecting = false;
+            gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             gatt.discoverServices();
 
         } else {  // Disconnected
