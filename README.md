@@ -49,13 +49,13 @@ This plugin is included in iOS and Android versions of the [PhoneGap Developer A
 
 Note that this plugin's id changed from `com.megster.cordova.ble` to `cordova-plugin-ble-central` as part of the migration from the [Cordova plugin repo](http://plugins.cordova.io/) to [npm](https://www.npmjs.com/).
 
-### iOS 10
+### iOS
 
-For iOS 10, apps will crash unless they include usage description keys for the types of data they access. For Bluetooth, [NSBluetoothPeripheralUsageDescription](https://developer.apple.com/library/prerelease/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW20) must be defined.
-
-This can be done when the plugin is installed using the BLUETOOTH_USAGE_DESCRIPTION variable.
+For iOS, apps will crash unless they include usage description keys for the types of data they access. Applications targeting iOS 13 and later, define [NSBluetoothAlwaysUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nsbluetoothalwaysusagedescription?language=objc) to tell the user why the application needs Bluetooth. For apps with a deployment target earlier than iOS 13, add [NSBluetoothPeripheralUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nsbluetoothperipheralusagedescription?language=objc). Both of these keys can be set when installing the plugin by passing the BLUETOOTH_USAGE_DESCRIPTION variable.
 
     $ cordova plugin add cordova-plugin-ble-central --variable BLUETOOTH_USAGE_DESCRIPTION="Your description here"
+
+See Apple's documentation about [Protected Resources](https://developer.apple.com/documentation/bundleresources/information_property_list/protected_resources) for more details. If your app needs other permissions like location, try the [cordova-custom-config plugin](https://github.com/don/cordova-plugin-ble-central/issues/700#issuecomment-538312656).
 
 # API
 
@@ -250,7 +250,7 @@ Connect to a peripheral.
 
 ### Description
 
-Function `connect` connects to a BLE peripheral. The callback is long running. The connect callback will be called when the connection is successful. Service and characteristic info will be passed to the connect callback in the [peripheral object](#peripheral-data). 
+Function `connect` connects to a BLE peripheral. The callback is long running. The connect callback will be called when the connection is successful. Service and characteristic info will be passed to the connect callback in the [peripheral object](#peripheral-data).
 
 The disconnect callback is called if the connection fails, or later if the peripheral disconnects. When possible, a peripheral object is passed to the failure callback. The disconnect callback is only called when the peripheral initates the disconnection. The disconnect callback is not called when the application calls [ble.disconnect](#disconnect). The disconnect callback is how your app knows the peripheral inintiated a disconnect.
 
@@ -278,7 +278,7 @@ Automatically connect to a device when it is in range of the phone. When the dev
 
 Calling [ble.disconnect](#disconnect) will stop the automatic reconnection.
 
-Both the connect and disconnect callbacks can be called many times as the device connects and disconnects. Do not wrap this function in a Promise or Observable. 
+Both the connect and disconnect callbacks can be called many times as the device connects and disconnects. Do not wrap this function in a Promise or Observable.
 
 On iOS, [background notifications on ios](#background-notifications-on-ios) must be enabled if you want to run in the background. On Android, this relies on the autoConnect argument of `BluetoothDevice.connectGatt()`. Not all Android devices implement this feature correctly.
 
@@ -337,7 +337,7 @@ refreshDeviceCache
 ### Description
 
 Some poorly behaved devices show old cached services and characteristics info. (Usually because they
-don't implement Service Changed 0x2a05 on Generic Attribute Service 0x1801 and the central doesn't know 
+don't implement Service Changed 0x2a05 on Generic Attribute Service 0x1801 and the central doesn't know
 the data needs to be refreshed.) This method might help.
 
 *NOTE* Since this uses an undocumented API it's not guaranteed to work.
